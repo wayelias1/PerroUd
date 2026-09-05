@@ -1,15 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-	<title>Doggy</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<script src="js/script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doggy</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-	<div class="container">
-		<div class="header">
-			<h1>Doggy</h1>
-		</div>
 
+    <div class="container">
+        <!-- ENCABEZADO / MENÚ -->
+        <header class="header">
+            <h1>Doggy</h1>
+            <button id="btnSettings" class="btn-icon">Settings</button>
+        </header>
+        
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="content">
+            <button id="btnIniciar" class="btn-primary">Iniciar</button>
+        </main>
+    </div>
 
+    <!-- MODAL DE CONFIGURACIÓN -->
+    <div id="modalSettings" class="modal">
+        <div class="modal-content">
+            <span id="btnCloseModal" class="close-btn">&times;</span>
+            <h2>Configuración</h2>
+            
+            <div class="setting-item">
+                <label for="colorHeader">Color del Menú:</label>
+                <input type="color" id="colorHeader" value="#333333">
+            </div>
+
+            <div class="setting-item">
+                <label for="colorButtons">Color de los Botones:</label>
+                <input type="color" id="colorButtons" value="#007bff">
+            </div>
+
+            <button id="btnGuardarConfig" class="btn-primary">Guardar</button>
+        </div>
+    </div>
+
+    <!-- JS al final del body para asegurar la carga del DOM -->
+    <script src="javascript.js"></script>
 </body>
+</html>
