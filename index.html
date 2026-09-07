@@ -4,44 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doggy</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 
     <div class="container">
-        <!-- ENCABEZADO / MENÚ -->
+        <!-- ENCABEZADO -->
         <header class="header">
-            <h1>Doggy</h1>
-            <button id="btnSettings" class="btn-icon">Settings</button>
-        </header>
-        
+			<h1 class="logo-title">Doggy</h1>
+			<button id="btnSettings" class="btn-settings-icon" type="button" title="Configuración">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="3"></circle>
+					<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+				</svg>
+			</button>
+		</header>
+
         <!-- CONTENIDO PRINCIPAL -->
         <main class="content">
-            <button id="btnIniciar" class="btn-primary">Iniciar</button>
+            <div class="controls-wrapper">
+                <!-- Contenedor alineado horizontalmente para los dos botones -->
+                <div class="row-buttons">
+                    <button id="btnTimeLeft" class="btn-primary" type="button">◀ Anterior</button>
+                    <button id="btnTimeRight" class="btn-primary" type="button">Siguiente ▶</button>
+                </div>
+                
+                <!-- Botón UD centrado abajo -->
+                <button id="btnIniciar" class="btn-primary full-width" type="button">UD</button>
+            </div>
         </main>
     </div>
 
-    <!-- MODAL DE CONFIGURACIÓN -->
-    <div id="modalSettings" class="modal">
-        <div class="modal-content">
-            <span id="btnCloseModal" class="close-btn">&times;</span>
-            <h2>Configuración</h2>
+    <!-- MODAL DE CONFIGURACIÓN (Inicia oculta con estilo inline para forzar la lectura) -->
+    <div id="modalSettings" class="modal-overlay" style="display: none !important;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Configuración</h2>
+                <button id="btnCloseModal" class="btn-close" type="button">&times;</button>
+            </div>
             
-            <div class="setting-item">
-                <label for="colorHeader">Color del Menú:</label>
-                <input type="color" id="colorHeader" value="#333333">
+            <div class="modal-body">
+                <!-- Modo Claro / Oscuro -->
+                <div class="setting-group">
+                    <span class="setting-label">Tema de fondo</span>
+                    <div class="theme-switch">
+                        <button type="button" id="btnModeLight" class="switch-btn active">Claro</button>
+                        <button type="button" id="btnModeDark" class="switch-btn">Oscuro</button>
+                    </div>
+                </div>
+
+                <!-- Paleta de Colores -->
+                <div class="setting-group vertical">
+                    <span class="setting-label">Color de botones</span>
+                    <div class="color-grid">
+                        <button type="button" class="color-dot active" data-color="#007bff" style="background-color: #007bff;"></button>
+                        <button type="button" class="color-dot" data-color="#8e44ad" style="background-color: #8e44ad;"></button>
+                        <button type="button" class="color-dot" data-color="#e74c3c" style="background-color: #e74c3c;"></button>
+                        <button type="button" class="color-dot" data-color="#2ecc71" style="background-color: #2ecc71;"></button>
+                        <button type="button" class="color-dot" data-color="#f39c12" style="background-color: #f39c12;"></button>
+                        <button type="button" class="color-dot" data-color="#e84393" style="background-color: #e84393;"></button>
+                        <button type="button" class="color-dot" data-color="#1abc9c" style="background-color: #1abc9c;"></button>
+                        <button type="button" class="color-dot" data-color="#34495e" style="background-color: #34495e;"></button>
+                    </div>
+                </div>
             </div>
 
-            <div class="setting-item">
-                <label for="colorButtons">Color de los Botones:</label>
-                <input type="color" id="colorButtons" value="#007bff">
-            </div>
-
-            <button id="btnGuardarConfig" class="btn-primary">Guardar</button>
+            <button id="btnGuardarConfig" class="btn-primary full-width" type="button">Guardar Cambios</button>
         </div>
     </div>
 
-    <!-- JS al final del body para asegurar la carga del DOM -->
     <script src="javascript.js"></script>
 </body>
 </html>

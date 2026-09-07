@@ -1,95 +1,258 @@
-/* Variables de color dinámicas */
+/* ==========================================================================
+   1. VARIABLES DE TEMA (CLARO Y OSCURO)
+   ========================================================================== */
 :root {
-    --header-bg: #333333;
+    --bg-body: #f8f9fa;
+    --text-main: #212529;
+    --header-bg: #1e293b;
+    --header-text: #ffffff;
+    --modal-bg: #ffffff;
+    --modal-border: #e2e8f0;
     --btn-bg: #007bff;
     --btn-text: #ffffff;
 }
 
-/* General */
-body {
-    font-family: Arial, sans-serif;
+body.dark-mode {
+    --bg-body: #0f172a;
+    --text-main: #f8fafc;
+    --header-bg: #1e293b;
+    --header-text: #ffffff;
+    --modal-bg: #1e293b;
+    --modal-border: #334155;
+}
+
+/* ==========================================================================
+   2. REINICIO Y ESTRUCTURA GENERAL
+   ========================================================================== */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Header / Menú */
+body {
+    width: 320px;
+    height: 400px;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    overflow: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ==========================================================================
+   3. ENCABEZADO Y ALINEACIÓN (TITULO Y SETTINGS EN LA MISMA LÍNEA)
+   ========================================================================== */
 .header {
     background-color: var(--header-bg);
-    color: white;
+    color: var(--header-text);
     display: flex;
     justify-content: space-between;
+    align-items: center; /* Alineación vertical al centro */
+    padding: 0 18px;
+    height: 56px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    display: flex;
     align-items: center;
-    padding: 15px 30px;
-    transition: background-color 0.3s ease;
 }
 
-/* Botones */
-.btn-primary {
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    border-radius: 6px;
+.btn-settings-icon {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: var(--header-text);
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: opacity 0.2s ease, transform 0.3s ease;
 }
 
-.btn-primary:hover {
-    opacity: 0.9;
+.btn-settings-icon svg {
+    display: block;
 }
 
-.btn-icon {
-    background-color: transparent;
-    color: white;
-    border: 1px solid white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
+.btn-settings-icon:hover {
+    opacity: 0.8;
+    transform: rotate(45deg);
 }
 
-/* Contenido */
+/* ==========================================================================
+   4. CONTENIDO PRINCIPAL Y BOTÓN UD
+   ========================================================================== */
 .content {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60vh;
 }
 
-/* Estilos de la Modal */
-.modal {
-    display: none; /* Oculta por defecto */
+.btn-primary {
+    background-color: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    border: none !important;
+    outline: none !important;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ==========================================================================
+   5. MODAL FLOTANTE (CONFIGURACIÓN)
+   ========================================================================== */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
 }
 
-.modal-content {
-    background-color: white;
-    padding: 25px;
-    border-radius: 8px;
-    width: 300px;
-    position: relative;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.modal-card {
+    background-color: var(--modal-bg);
+    border: 1px solid var(--modal-border);
+    width: 88%;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.setting-item {
-    margin: 20px 0;
+.modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 16px;
+}
+
+.modal-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: var(--text-main);
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* GRUPOS DE CONFIGURACIÓN */
+.setting-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.setting-group.vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.setting-label {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* SWITCH TEMA CLARO / OSCURO */
+.theme-switch {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 3px;
+    border-radius: 6px;
+}
+
+.switch-btn {
+    background: transparent;
+    border: none;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.switch-btn.active {
+    background-color: var(--btn-bg) !important;
+    color: #ffffff !important;
+}
+
+/* PALETA DE 8 COLORES */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.color-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent !important;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: transform 0.15s ease;
+}
+
+.color-dot:hover {
+    transform: scale(1.1);
+}
+
+.color-dot.active {
+    border-color: var(--text-main) !important;
+    transform: scale(1.15);
 }
