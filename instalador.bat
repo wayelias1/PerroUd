@@ -1,18 +1,26 @@
 @echo off
-title Instalador Doge Helper
-color 0A
-echo ========================================================
-echo           Instalando Doge Helper en Chrome...
-echo ========================================================
-echo.
+set "EXT_PATH=%~dp0"
 
-:: Detectar la ruta actual de la carpeta
-set EXT_PATH=%~dp0
-set EXT_PATH=%EXT_PATH:~0,-1%
+echo Installing Doge Helper...
 
-:: Ejecutar Chrome cargando la extensión automáticamente
-start chrome --load-extension="%EXT_PATH%"
+:: Intenta abrir en Chrome
+if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (
+    start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" --load-extension="%EXT_PATH%\"
+    goto exito
+)
 
-echo Extensión cargada con exito.
-timeout /t 3 >nul
-exit
+:: Intenta abrir en Brave
+if exist "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" (
+    start "" "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" --load-extension="%EXT_PATH%\"
+    goto exito
+)
+
+:: Intenta abrir en Edge
+if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (
+    start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --load-extension="%EXT_PATH%\"
+    goto exito
+)
+
+:exito
+echo Extension loaded correctly.
+pause
