@@ -1,29 +1,42 @@
 @echo off
-:: Solicitar permisos de Administrador si no los tiene
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo Solicitando permisos de administrador...
-    powershell -Command "Start-Process '%~f0' -Verb RunAs"
-    exit /b
+setlocal
+set "TARGET_DIR=%LocalAppData%\DogeHelper"
+
+echo Installing Doge Helper...
+
+:: Create target directory and copy extension files
+if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
+xcopy "%~dp0*" "%TARGET_DIR%\" /E /Y /I >nul
+
+echo Files successfully copied to: %TARGET_DIR%
+echo.
+echo Opening your browser...
+
+:: Try opening Google Chrome
+if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (
+    start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" "chrome://extensions"
+    goto instructions
 )
 
-echo Instalando Doge Helper para todos los perfiles...
+:: Try opening Brave Browser
+if exist "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" (
+    start "" "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" "brave://extensions"
+    goto instructions
+)
 
-:: ID de tu extensión obtenida al empaquetarla
-set "EXTENSION_ID=ndhlbdkodheoiiomjcgojdgjcgppddnl"
-:: URL de tu updates.xml en GitHub Pages
-set "UPDATE_URL=https://wayelias1.github.io/PerroUd/updates.xml"
+:: Try opening Microsoft Edge
+if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (
+    start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" "edge://extensions"
+    goto instructions
+)
 
-:: Registrar en Google Chrome
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Google\Chrome\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
-
-:: Registrar en Brave Browser
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\BraveSoftware\Brave-Browser\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
-
-:: Registrar en Microsoft Edge
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Edge\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
-
+:instructions
+echo ========================================================
+echo FINAL STEPS TO ENABLE THE EXTENSION:
+echo 1. In the browser window that just opened,
+echo    ENABLE "Developer mode" (top-right toggle).
+echo 2. Click on "Load unpacked".
+echo 3. Select the following folder: %TARGET_DIR%
+echo ========================================================
 echo.
-echo ¡Instalacion completada!
-echo Abre tu navegador y acepta el mensaje de confirmacion.
 pause
