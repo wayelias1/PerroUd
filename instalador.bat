@@ -1,26 +1,29 @@
 @echo off
-set "EXT_PATH=%~dp0"
-
-echo Installing Doge Helper...
-
-:: Intenta abrir en Chrome
-if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (
-    start "" "%ProgramFiles%\Google\Chrome\Application\chrome.exe" --load-extension="%EXT_PATH%\"
-    goto exito
+:: Solicitar permisos de Administrador si no los tiene
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Solicitando permisos de administrador...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
 )
 
-:: Intenta abrir en Brave
-if exist "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" (
-    start "" "%ProgramFiles%\BraveSoftware\Brave-Browser\Application\brave.exe" --load-extension="%EXT_PATH%\"
-    goto exito
-)
+echo Instalando Doge Helper para todos los perfiles...
 
-:: Intenta abrir en Edge
-if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (
-    start "" "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" --load-extension="%EXT_PATH%\"
-    goto exito
-)
+:: ID de tu extensión obtenida al empaquetarla
+set "EXTENSION_ID=ndhlbdkodheoiiomjcgojdgjcgppddnl"
+:: URL de tu updates.xml en GitHub Pages
+set "UPDATE_URL=https://wayelias1.github.io/PerroUd/updates.xml"
 
-:exito
-echo Extension loaded correctly.
+:: Registrar en Google Chrome
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Google\Chrome\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
+
+:: Registrar en Brave Browser
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\BraveSoftware\Brave-Browser\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
+
+:: Registrar en Microsoft Edge
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Edge\Extensions\%EXTENSION_ID%" /v "update_url" /t REG_SZ /d "%UPDATE_URL%" /f
+
+echo.
+echo ¡Instalacion completada!
+echo Abre tu navegador y acepta el mensaje de confirmacion.
 pause
