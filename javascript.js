@@ -1,5 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
+    // 0. CARGA DEL AUDIO (LADRIDO)
+    // ==========================================
+    const audioLadrido = new Audio(chrome.runtime.getURL('ladrito.mp3'));
+
+    function reproducirLadrido() {
+        audioLadrido.currentTime = 0;
+        audioLadrido.play().catch(error => {
+            console.error("Error al reproducir el ladrido:", error);
+        });
+    }
+
+    // ==========================================
     // 1. REFERENCIAS A ELEMENTOS DEL DOM
     // ==========================================
     const modal = document.getElementById('modalSettings');
@@ -15,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnTimeRight = document.getElementById('btnTimeRight');
     const btnIniciar = document.getElementById('btnIniciar');
 
-    // Constante de 1 día en milisegundos (24 * 60 * 60 * 1000)
     const ONE_DAY_MS = 86400000;
 
     let currentTheme = 'light';
@@ -111,7 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newTimestamp = currentTimestamp + millisecondsChange;
                 const newUrl = currentUrl.replace(dateRegex, `$1${newTimestamp}`);
 
-                chrome.tabs.update(tabs[0].id, { url: newUrl });
+                // Actualiza la URL y fuerza la recarga de la página
+                chrome.tabs.update(tabs[0].id, { url: newUrl }, () => {
+                    chrome.tabs.reload(tabs[0].id);
+                });
             } else {
                 console.warn('El parámetro &date= no existe en la URL actual.');
             }
@@ -126,9 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
         shiftDateParam(ONE_DAY_MS);
     });
 
-    // Acción para el botón UD
+    // ==========================================
+    // 6. ACCIÓN PARA EL BOTÓN UD (BOTÓN INICIAR)
+    // ==========================================
     if (btnIniciar) {
         btnIniciar.addEventListener('click', () => {
+            reproducirLadrido();
             console.log('Botón UD presionado');
         });
     }

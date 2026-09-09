@@ -47,14 +47,14 @@ body {
 }
 
 /* ==========================================================================
-   3. ENCABEZADO Y ALINEACIÓN (TITULO Y SETTINGS EN LA MISMA LÍNEA)
+   3. ENCABEZADO Y ALINEACIÓN (TÍTULO Y BOTOÓN SETTINGS)
    ========================================================================== */
 .header {
     background-color: var(--header-bg);
     color: var(--header-text);
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Alineación vertical al centro */
+    align-items: center;
     padding: 0 18px;
     height: 56px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -97,22 +97,57 @@ body {
 }
 
 /* ==========================================================================
-   4. CONTENIDO PRINCIPAL Y BOTÓN UD
+   4. CONTENIDO PRINCIPAL, SECCIONES Y BOTONES
    ========================================================================== */
 .content {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 16px;
 }
 
+.controls-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Etiquetas indicadoras de sección (Time buttons / Show 0 UD) */
+.control-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    opacity: 0.85;
+}
+
+/* Margen superior extra para separar visualmente el grupo UD */
+.control-label:nth-of-type(2) {
+    margin-top: 18px;
+}
+
+/* Fila horizontal para los botones de tiempo (Anterior / Siguiente) */
+.row-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.row-buttons .btn-primary {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+/* Botón principal universal */
 .btn-primary {
     background-color: var(--btn-bg) !important;
     color: var(--btn-text) !important;
     border: none !important;
     outline: none !important;
-    padding: 14px 28px;
-    font-size: 16px;
+    padding: 12px 20px;
+    font-size: 15px;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
@@ -130,11 +165,10 @@ body {
 
 .full-width {
     width: 100%;
-    margin-top: 10px;
 }
 
 /* ==========================================================================
-   5. MODAL FLOTANTE (CONFIGURACIÓN)
+   5. MODAL FLOTANTE (CONFIGURACIÓN DE TEMA Y COLOR)
    ========================================================================== */
 .modal-overlay {
     position: fixed;
