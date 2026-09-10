@@ -1,39 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
-    // 1. DOM ELEMENTS SELECTION
+    // 1. CONSTANTS AND DOM ELEMENTS
     // ==========================================
-    // Settings & Modal Elements
+    const ONE_DAY_MS = 86400000;
+
+    // Settings Elements
     const settingsBtn = document.getElementById('btn-settings');
     const settingsModal = document.getElementById('settings-modal');
     const closeModalBtn = document.getElementById('btn-close-modal');
 
+    // Theme & Color Elements
     const themeLightBtn = document.getElementById('theme-light');
     const themeDarkBtn = document.getElementById('theme-dark');
     const colorDots = document.querySelectorAll('.color-dot');
 
-    // Extension Main Action Buttons
+    // Main Action Buttons
     const btnTimePrev = document.getElementById('btn-time-prev');
     const btnTimeNext = document.getElementById('btn-time-next');
     const btnRemoveUd = document.getElementById('btn-remove-ud');
 
-    // Audio Element
+    // Audio Instance
     const barkAudio = new Audio(chrome.runtime.getURL('ladrito.mp3'));
 
     // ==========================================
-    // 2. LOAD STORED PREFERENCES (THEME & COLOR)
+    // 2. LOAD PREFERENCES FROM STORAGE
     // ==========================================
     chrome.storage.local.get(['theme', 'accentColor'], (result) => {
-        // Load Theme (Default: 'light')
         const currentTheme = result.theme || 'light';
         applyTheme(currentTheme);
 
-        // Load Accent Color (Default: '#007bff')
         const currentColor = result.accentColor || '#007bff';
         applyAccentColor(currentColor);
     });
 
     // ==========================================
-    // 3. MODAL CONTROLS (OPEN / CLOSE)
+    // 3. MODAL CONTROLS
     // ==========================================
     if (settingsBtn && settingsModal) {
         settingsBtn.addEventListener('click', () => {
@@ -47,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close modal when clicking on the overlay background
     if (settingsModal) {
         settingsModal.addEventListener('click', (e) => {
             if (e.target === settingsModal) {
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 4. THEME SWITCHING (LIGHT / DARK)
+    // 4. THEME & ACCENT COLOR LOGIC
     // ==========================================
     if (themeLightBtn && themeDarkBtn) {
         themeLightBtn.addEventListener('click', () => {
@@ -83,9 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
-    // 5. ACCENT COLOR SELECTION
-    // ==========================================
     colorDots.forEach((dot) => {
         dot.addEventListener('click', (e) => {
             const selectedColor = e.target.getAttribute('data-color');
@@ -95,10 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function applyAccentColor(color) {
-        // Set CSS custom property for color
         document.documentElement.style.setProperty('--btn-bg', color);
 
-        // Update active class state on color dots
         colorDots.forEach((dot) => {
             if (dot.getAttribute('data-color') === color) {
                 dot.classList.add('active');
@@ -109,57 +104,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 6. HELPER FUNCTIONS FOR DOM INJECTION & AUDIO
+    // 5. AUXILIARY FUNCTIONS (AUDIO & TABS)
     // ==========================================
     function playBarkSound() {
         barkAudio.currentTime = 0;
-        barkAudio.play().catch((err) => console.log('Audio playback blocked or failed:', err));
+        barkAudio.play().catch((err) => console.log('Audio error:', err));
     }
 
-    function executeScriptOnActiveTab(funcToInject) {
+    function shiftDateParam(millisecondsChange) {
+        playBarkSound();
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0]?.id) {
-                chrome.scripting.executeScript({
-                    target: { tabId: tabs[0].id },
-                    func: funcToInject
+            if (!tabs || !tabs[0] || !tabs[0].url) return;
+
+            const currentUrl = tabs[0].url;
+            const dateRegex = /(&date=)(\d+)/;
+            const match = currentUrl.match(dateRegex);
+
+            if (match) {
+                const currentTimestamp = parseInt(match[2], 10);
+                const newTimestamp = currentTimestamp + millisecondsChange;
+                const newUrl = currentUrl.replace(dateRegex, `$1${newTimestamp}`);
+
+                chrome.tabs.update(tabs[0].id, { url: newUrl }, () => {
+                    chrome.tabs.reload(tabs[0].id);
                 });
+            } else {
+                console.warn('Parameter &date= not found in the current URL.');
             }
         });
     }
 
     // ==========================================
-    // 7. MAIN EXTENSION BUTTON ACTIONS
+    // 6. MAIN BUTTON LISTENERS
     // ==========================================
-
-    // Time Navigation: Previous
     if (btnTimePrev) {
-        btnTimePrev.addEventListener('click', () => {
-            playBarkSound();
-            executeScriptOnActiveTab(() => {
-                // DOM interaction code on active tab
-                //console.log('Doge Helper: Triggered Previous Time');
-            });
-        });
+        btnTimePrev.addEventListener('click', () => shiftDateParam(-ONE_DAY_MS));
     }
 
-    // Time Navigation: Next
     if (btnTimeNext) {
-        btnTimeNext.addEventListener('click', () => {
-            playBarkSound();
-            executeScriptOnActiveTab(() => {
-                // DOM interaction code on active tab
-                //console.log('Doge Helper: Triggered Next Time');
-            });
-        });
+        btnTimeNext.addEventListener('click', () => shiftDateParam(ONE_DAY_MS));
     }
 
-    // Main Action: Show / Remove 0 UD
     if (btnRemoveUd) {
         btnRemoveUd.addEventListener('click', () => {
             playBarkSound();
-            executeScriptOnActiveTab(() => {
-                // DOM interaction code on active tab
-                //console.log('Doge Helper: Appeared 0 UD');
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]?.id) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: () => {
+                            console.log('Doge Helper: Show 0 UD triggered');
+                        }
+                    });
+                }
             });
         });
     }
