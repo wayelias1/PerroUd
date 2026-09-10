@@ -106,18 +106,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 5. AUXILIARY FUNCTIONS (AUDIO & TABS)
     // ==========================================
-    function playBarkSound() {
-        try {
-            const audioUrl = chrome.runtime.getURL('ladrito.mp3');
-            const barkAudio = new Audio(audioUrl);
-            barkAudio.currentTime = 0;
-            barkAudio.play().catch((err) => {
-                console.warn('Playback prevented or file not found:', err);
-            });
-        } catch (e) {
-            console.error('Error getting runtime URL for audio:', e);
-        }
+  function playBarkSound() {
+    try {
+        // Intenta cargar primero el .mp3
+        const soundUrl = chrome.runtime.getURL('ladrito.mp3');
+        const audio = new Audio(soundUrl);
+
+        // Si ocurre un error al intentar cargar el recurso (e.g. 404 o no permitido)
+        audio.onerror = () => {
+            console.warn('No se encontró ladrito.mp3, intentando con .wav...');
+            try {
+                const fallbackUrl = chrome.runtime.getURL('ladrito.wav');
+                const fallbackAudio = new Audio(fallbackUrl);
+                
+                // Si también falla el fallback, ignorar silenciosamente
+                fallbackAudio.onerror = () => {
+                    console.warn('Tampoco se encontró ladrito.wav. Audio ignorado.');
+                };
+
+                fallbackAudio.play().catch(e => console.warn('Reproducción cancelada:', e));
+            } catch (fallbackError) {
+                console.warn('Error en fallback de audio ignorado:', fallbackError);
+            }
+        };
+
+        // Intentar reproducir el primario
+        audio.currentTime = 0;
+        audio.play().catch(e => console.warn('Reproducción cancelada:', e));
+
+    } catch (err) {
+        // Si chrome.runtime.getURL falla o la API no está disponible, no congela la extensión
+        console.warn('Error general de audio ignorado:', err);
     }
+}
 
     function shiftDateParam(millisecondsChange) {
         playBarkSound();
