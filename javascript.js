@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRemoveUd = document.getElementById('btn-remove-ud');
 
     // Audio Instance
-    const barkAudio = new Audio(chrome.runtime.getURL('ladrito.mp3'));
+    //const barkAudio = new Audio(chrome.runtime.getURL('ladrito.mp3'));
 
     // ==========================================
     // 2. LOAD PREFERENCES FROM STORAGE
