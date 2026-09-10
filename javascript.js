@@ -107,8 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. AUXILIARY FUNCTIONS (AUDIO & TABS)
     // ==========================================
     function playBarkSound() {
-        barkAudio.currentTime = 0;
-        barkAudio.play().catch((err) => console.log('Audio error:', err));
+        try {
+            const audioUrl = chrome.runtime.getURL('ladrito.mp3');
+            const barkAudio = new Audio(audioUrl);
+            barkAudio.currentTime = 0;
+            barkAudio.play().catch((err) => {
+                console.warn('Playback prevented or file not found:', err);
+            });
+        } catch (e) {
+            console.error('Error getting runtime URL for audio:', e);
+        }
     }
 
     function shiftDateParam(millisecondsChange) {
