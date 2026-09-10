@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Si el archivo .mp3 no existe en la carpeta, intenta cargar .wav como respaldo
             audio.onerror = () => {
-                let fallbackUrl = 'ladrito.wav';
+                let fallbackUrl = 'ladrito.mp3';
                 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
                     fallbackUrl = chrome.runtime.getURL('ladrito.mp3');
                 }
