@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='ndhlbdkodheoiiomjcgojdgjcgppddnl'>
-    <updatecheck codebase='https://wayelias1.github.io/PerroUd/doge-helper.crx' version='1.2.2' />
+    <updatecheck codebase='https://github.com/wayelias1/PerroUd/releases/download/V1.2.0/Perro.2.0.crx' version='1.2.0' />
   </app>
 </gupdate>
