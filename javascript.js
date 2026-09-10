@@ -19,8 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnTimeNext = document.getElementById('btn-time-next');
     const btnRemoveUd = document.getElementById('btn-remove-ud');
 
-    // Audio Instance
-    //const barkAudio = new Audio(chrome.runtime.getURL('ladrito.mp3'));
+    
 
     // ==========================================
     // 2. LOAD PREFERENCES FROM STORAGE
@@ -59,16 +58,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 4. THEME & ACCENT COLOR LOGIC
     // ==========================================
-    if (themeLightBtn && themeDarkBtn) {
-        themeLightBtn.addEventListener('click', () => {
-            applyTheme('light');
-            chrome.storage.local.set({ theme: 'light' });
-        });
+    // Variable auxiliar para verificar si estamos en entorno de Extensión
+    const isExtension = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
 
-        themeDarkBtn.addEventListener('click', () => {
-            applyTheme('dark');
-            chrome.storage.local.set({ theme: 'dark' });
+    // Cargar preferencias
+    if (isExtension) {
+        chrome.storage.local.get(['theme', 'accentColor'], (result) => {
+            applyTheme(result.theme || 'light');
+            applyAccentColor(result.accentColor || '#007bff');
         });
+    } else {
+        // Modo Página Web (localStorage nativo)
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedColor = localStorage.getItem('accentColor') || '#007bff';
+        applyTheme(savedTheme);
+        applyAccentColor(savedColor);
+    }
+
+    // Para guardar cuando el usuario cambia un ajuste:
+    function savePreference(key, value) {
+        if (isExtension) {
+            chrome.storage.local.set({ [key]: value });
+        } else {
+            localStorage.setItem(key, value);
+        }
     }
 
     function applyTheme(theme) {
@@ -106,39 +119,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 5. AUXILIARY FUNCTIONS (AUDIO & TABS)
     // ==========================================
-  function playBarkSound() {
-    try {
-        // Intenta cargar primero el .mp3
-        const soundUrl = chrome.runtime.getURL('ladrito.mp3');
-        const audio = new Audio(soundUrl);
+    // FUNCIÓN DE AUDIO HÍBRIDA (Web + Extensión)
+    function playBarkSound() {
+        try {
+            let soundUrl = 'ladrito.mp3'; // Ruta por defecto para web plana
 
-        // Si ocurre un error al intentar cargar el recurso (e.g. 404 o no permitido)
-        audio.onerror = () => {
-            console.warn('No se encontró ladrito.mp3, intentando con .wav...');
-            try {
-                const fallbackUrl = chrome.runtime.getURL('ladrito.wav');
-                const fallbackAudio = new Audio(fallbackUrl);
-                
-                // Si también falla el fallback, ignorar silenciosamente
-                fallbackAudio.onerror = () => {
-                    console.warn('Tampoco se encontró ladrito.wav. Audio ignorado.');
-                };
-
-                fallbackAudio.play().catch(e => console.warn('Reproducción cancelada:', e));
-            } catch (fallbackError) {
-                console.warn('Error en fallback de audio ignorado:', fallbackError);
+            // Si estamos dentro del entorno de la extensión de Chrome
+            if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+                soundUrl = chrome.runtime.getURL('ladrito.mp3');
             }
-        };
 
-        // Intentar reproducir el primario
-        audio.currentTime = 0;
-        audio.play().catch(e => console.warn('Reproducción cancelada:', e));
+            const audio = new Audio(soundUrl);
+            audio.currentTime = 0;
 
-    } catch (err) {
-        // Si chrome.runtime.getURL falla o la API no está disponible, no congela la extensión
-        console.warn('Error general de audio ignorado:', err);
+            // Si el archivo .mp3 no existe en la carpeta, intenta cargar .wav como respaldo
+            audio.onerror = () => {
+                let fallbackUrl = 'ladrito.wav';
+                if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+                    fallbackUrl = chrome.runtime.getURL('ladrito.wav');
+                }
+                const fallbackAudio = new Audio(fallbackUrl);
+                fallbackAudio.play().catch(e => console.warn('Audio fallback no disponible:', e));
+            };
+
+            audio.play().catch(e => console.warn('Reproducción de audio bloqueada:', e));
+        } catch (err) {
+            console.warn('Error al ejecutar el sonido:', err);
+        }
     }
-}
 
     function shiftDateParam(millisecondsChange) {
         playBarkSound();
