@@ -19,18 +19,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnTimeNext = document.getElementById('btn-time-next');
     const btnRemoveUd = document.getElementById('btn-remove-ud');
 
-    
+    // Audio Instance
+    //const barkAudio = new Audio(chrome.runtime.getURL('ladrito.mp3'));
 
     // ==========================================
     // 2. LOAD PREFERENCES FROM STORAGE
     // ==========================================
-    chrome.storage.local.get(['theme', 'accentColor'], (result) => {
-        const currentTheme = result.theme || 'light';
-        applyTheme(currentTheme);
+    // Variable auxiliar para verificar si estamos en entorno de Extensión
+        const isExtension = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
 
-        const currentColor = result.accentColor || '#007bff';
-        applyAccentColor(currentColor);
-    });
+        // Cargar preferencias
+        if (isExtension) {
+            chrome.storage.local.get(['theme', 'accentColor'], (result) => {
+                applyTheme(result.theme || 'light');
+                applyAccentColor(result.accentColor || '#007bff');
+            });
+        } else {
+            // Modo Página Web (localStorage nativo)
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const savedColor = localStorage.getItem('accentColor') || '#007bff';
+            applyTheme(savedTheme);
+            applyAccentColor(savedColor);
+        }
+
+        // Para guardar cuando el usuario cambia un ajuste:
+        function savePreference(key, value) {
+            if (isExtension) {
+                chrome.storage.local.set({ [key]: value });
+            } else {
+                localStorage.setItem(key, value);
+            }
+        }
 
     // ==========================================
     // 3. MODAL CONTROLS
@@ -58,30 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 4. THEME & ACCENT COLOR LOGIC
     // ==========================================
-    // Variable auxiliar para verificar si estamos en entorno de Extensión
-    const isExtension = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
-
-    // Cargar preferencias
-    if (isExtension) {
-        chrome.storage.local.get(['theme', 'accentColor'], (result) => {
-            applyTheme(result.theme || 'light');
-            applyAccentColor(result.accentColor || '#007bff');
+    if (themeLightBtn && themeDarkBtn) {
+        themeLightBtn.addEventListener('click', () => {
+            applyTheme('light');
+            chrome.storage.local.set({ theme: 'light' });
         });
-    } else {
-        // Modo Página Web (localStorage nativo)
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        const savedColor = localStorage.getItem('accentColor') || '#007bff';
-        applyTheme(savedTheme);
-        applyAccentColor(savedColor);
-    }
 
-    // Para guardar cuando el usuario cambia un ajuste:
-    function savePreference(key, value) {
-        if (isExtension) {
-            chrome.storage.local.set({ [key]: value });
-        } else {
-            localStorage.setItem(key, value);
-        }
+        themeDarkBtn.addEventListener('click', () => {
+            applyTheme('dark');
+            chrome.storage.local.set({ theme: 'dark' });
+        });
     }
 
     function applyTheme(theme) {
@@ -136,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             audio.onerror = () => {
                 let fallbackUrl = 'ladrito.wav';
                 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
-                    fallbackUrl = chrome.runtime.getURL('ladrito.wav');
+                    fallbackUrl = chrome.runtime.getURL('ladrito.mp3');
                 }
                 const fallbackAudio = new Audio(fallbackUrl);
                 fallbackAudio.play().catch(e => console.warn('Audio fallback no disponible:', e));
